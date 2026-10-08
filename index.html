@@ -242,7 +242,7 @@ canvas.graph {
 </header>
 
 <div class="speed">
-    시뮬레이션 속도: <strong>600배속</strong> · 실제 1초 = 가상 10분
+    시뮬레이션 속도: <strong id="speedBanner">3600배속</strong> · 실제 1초 = 가상 <span id="speedBannerMin">60분</span>
 </div>
 
 <div class="container">
@@ -258,6 +258,15 @@ canvas.graph {
         <!-- 실험 조절 -->
         <div class="card">
             <div class="title">실험 조건 조절</div>
+
+            <!-- 시뮬레이션 배속 슬라이더 -->
+            <div class="control">
+                <div class="control-header">
+                    <span>시뮬레이션 배속</span>
+                    <span class="control-value" id="speedText">3600배속</span>
+                </div>
+                <input id="speedSlider" type="range" min="100" max="10000" step="100" value="3600">
+            </div>
 
             <!-- SOC 슬라이더 -->
             <div class="control">
@@ -329,12 +338,10 @@ canvas.graph {
 
             <div class="experiment">
                 <b>실험 방법</b><br>
-                ① SOC를 설정합니다.<br>
-                ② 전류를 설정합니다.<br>
-                ③ 충전 또는 방전을 시작합니다.<br>
-                ④ 배터리 모형과 수치의 변화를 관찰합니다.<br>
-                ⑤ 그래프를 통해 시간에 따른 변화를 확인합니다.<br>
-                ⑥ 전류 조건을 바꾸어 결과를 비교할 수 있습니다.
+                ① 배속, SOC, 전류를 설정합니다.<br>
+                ② 충전 또는 방전을 시작합니다.<br>
+                ③ 배터리 모형과 수치의 변화를 관찰합니다.<br>
+                ④ 그래프를 통해 시간에 따른 변화를 확인합니다.
             </div>
         </div>
     </div>
@@ -358,9 +365,8 @@ canvas.graph {
     <div class="card note">
         ※ 이 프로그램은 교육을 위해 나트륨이온 배터리의 특성을 크게 단순화한 모델입니다.<br>
         ※ OCV-SOC 관계, 배터리 용량, 내부저항은 특정 상용 나트륨이온 배터리의 실제 측정값을 그대로 사용한 것이 아닙니다.<br>
-        ※ 실제 나트륨이온 배터리에서는 온도, 내부 구조, 전기화학 반응 등 더 다양한 요소를 고려해야 합니다.<br>
-        ※ 배터리 내부의 파란색 Na⁺ 표시는 실제 이온의 정확한 위치나 개수를 나타내는 것이 아니라, 충전 상태에 따른 이온 이동을 이해하기 위한 개념적 시각화입니다.<br>
-        ※ 시뮬레이션은 600배속으로 진행되므로 실제 시간과 화면의 가상 경과 시간이 다릅니다.
+        ※ 배터리 내부의 파란색 Na⁺ 표시는 실제 이온의 정확한 위치나 개수가 아닌 시각적 유도를 위한 개념 모델입니다.<br>
+        ※ 슬라이더를 통해 시뮬레이션 배속을 자유롭게 변경하여 속도를 조절할 수 있습니다.
     </div>
 
 </div>
@@ -378,6 +384,7 @@ const socCtx = socGraph.getContext("2d");
 const voltageGraph = document.getElementById("voltageGraph");
 const voltageCtx = voltageGraph.getContext("2d");
 
+const speedSlider = document.getElementById("speedSlider");
 const socSlider = document.getElementById("socSlider");
 const currentSlider = document.getElementById("currentSlider");
 
@@ -389,7 +396,6 @@ const resetButton = document.getElementById("resetButton");
 // ============================================================
 // 모델 및 변수 설정
 // ============================================================
-const SIMULATION_SPEED = 600; // 실제 1초 = 가상 600초 (10분)
 const CAPACITY_AH = 3.2;
 const INTERNAL_RESISTANCE_OHM = 0.08;
 
@@ -405,6 +411,10 @@ let graphData = [];
 // ============================================================
 // 계산 함수
 // ============================================================
+function getSpeed() {
+    return Number(speedSlider.value);
+}
+
 function getSOC() {
     return Number(socSlider.value);
 }
@@ -439,11 +449,17 @@ function calculateVoltage() {
 // 상태 UI 업데이트
 // ============================================================
 function updateStatus() {
+    const speed = getSpeed();
     const soc = getSOC();
     const current = getCurrent();
     const ocv = calculateOCV(soc);
     const voltage = calculateVoltage();
 
+    const minPerSec = (speed / 60).toFixed(1);
+    document.getElementById("speedBanner").textContent = speed + "배속";
+    document.getElementById("speedBannerMin").textContent = minPerSec + "분";
+
+    document.getElementById("speedText").textContent = speed + "배속";
     document.getElementById("socText").textContent = soc.toFixed(0) + "%";
     document.getElementById("currentText").textContent = current.toFixed(1) + " A";
     document.getElementById("modeText").textContent = mode;
@@ -567,9 +583,9 @@ function drawBattery() {
 
         for (let i = 0; i < 6; i++) {
             let flowX;
-            if (direction === 1) { // 방전 (음극 -> 양극)
+            if (direction === 1) { // 방전
                 flowX = 220 + (animationOffset * 15 + i * 35) % 220;
-            } else { // 충전 (양극 -> 음극)
+            } else { // 충전
                 flowX = 440 - (animationOffset * 15 + i * 35) % 220;
             }
             const flowY = 100;
@@ -730,6 +746,7 @@ function resetSimulation() {
     simulatedMinutes = 0;
     animationOffset = 0;
     graphData = [];
+    speedSlider.value = 3600;
     socSlider.value = 70;
     currentSlider.value = 1.0;
 
@@ -742,17 +759,17 @@ function resetSimulation() {
 // 메인 시뮬레이션 루프
 // ============================================================
 function loop(timestamp) {
-    const dt = (timestamp - lastTime) / 1000; // 실제 초 단위 시간
+    const dt = (timestamp - lastTime) / 1000;
     lastTime = timestamp;
 
     if (running) {
         const current = getCurrent();
-        const simSeconds = dt * SIMULATION_SPEED;
+        const speed = getSpeed();
+        const simSeconds = dt * speed;
         const simHours = simSeconds / 3600;
 
         simulatedMinutes += simSeconds / 60;
 
-        // SOC 변화량 계산: Delta SOC = (I * dt_hours / Capacity) * 100
         const deltaSOC = (current * simHours / CAPACITY_AH) * 100;
 
         let currentSOC = getSOC();
@@ -772,7 +789,6 @@ function loop(timestamp) {
 
         setSOC(currentSOC);
 
-        // 0.2가상분 마다 그래프 데이터 기록
         if (simulatedMinutes - lastGraphSaveTime >= 0.2) {
             saveGraphData();
             drawGraphs();
@@ -794,10 +810,10 @@ dischargeButton.addEventListener("click", startDischarging);
 stopButton.addEventListener("click", stopSimulation);
 resetButton.addEventListener("click", resetSimulation);
 
+speedSlider.addEventListener("input", sliderUpdate);
 socSlider.addEventListener("input", sliderUpdate);
 currentSlider.addEventListener("input", sliderUpdate);
 
-// 최초 렌더링 및 애니메이션 시작
 resetSimulation();
 requestAnimationFrame((ts) => {
     lastTime = ts;
