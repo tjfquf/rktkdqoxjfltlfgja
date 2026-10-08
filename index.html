@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>나트륨이온 배터리 가상 실험</title>
 
 <style>
@@ -19,7 +20,7 @@ body {
 
 header {
     text-align: center;
-    padding: 28px 15px 8px;
+    padding: 26px 15px 8px;
 }
 
 header h1 {
@@ -30,79 +31,86 @@ header h1 {
 header p {
     margin: 0;
     color: #666;
+    font-size: 14px;
 }
 
-.speed-info {
+.speed {
     text-align: center;
-    margin-bottom: 18px;
+    color: #555;
     font-size: 13px;
-    color: #666;
+    margin-bottom: 18px;
 }
 
-.speed-info b {
-    color: #333;
+.speed strong {
+    color: #222;
 }
 
 .container {
-    width: min(1150px, 94%);
+    width: min(1180px, 94%);
     margin: auto;
 }
 
 .layout {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-columns: 1.15fr 0.85fr;
     gap: 20px;
 }
 
 .card {
-    background: white;
+    background: #fff;
     border-radius: 16px;
-    padding: 22px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .title {
     font-size: 19px;
-    font-weight: bold;
-    margin-bottom: 15px;
+    font-weight: 700;
+    margin-bottom: 14px;
 }
 
 #batteryCanvas {
     width: 100%;
     height: auto;
     display: block;
-    background: white;
+    background: #fff;
 }
 
 .control {
-    margin-bottom: 22px;
+    margin-bottom: 20px;
 }
 
-.control-title {
+.control-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
-    font-weight: bold;
+    margin-bottom: 7px;
+    font-weight: 700;
+}
+
+.control-value {
+    font-variant-numeric: tabular-nums;
 }
 
 input[type="range"] {
     width: 100%;
+    cursor: pointer;
 }
 
 .buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    margin-top: 12px;
+    margin: 10px 0 18px;
 }
 
 button {
-    border: none;
+    border: 0;
     border-radius: 9px;
-    padding: 13px 8px;
+    padding: 12px 8px;
     font-size: 14px;
-    font-weight: bold;
+    font-weight: 700;
     cursor: pointer;
+    background: #e9edf1;
 }
 
 button:active {
@@ -110,7 +118,7 @@ button:active {
 }
 
 .charge {
-    background: #dcefe1;
+    background: #dfeee2;
 }
 
 .discharge {
@@ -120,25 +128,23 @@ button:active {
 .stop,
 .reset {
     grid-column: 1 / 3;
-    background: #e8eaed;
 }
 
 .status {
-    margin-top: 18px;
-    padding: 14px;
-    background: #f5f6f7;
+    padding: 13px;
     border-radius: 10px;
+    background: #f6f7f8;
 }
 
 .row {
     display: flex;
     justify-content: space-between;
-    padding: 7px 0;
-    border-bottom: 1px solid #e2e4e6;
+    padding: 6px 0;
+    border-bottom: 1px solid #e4e6e8;
 }
 
 .row:last-child {
-    border-bottom: none;
+    border-bottom: 0;
 }
 
 .name {
@@ -146,48 +152,78 @@ button:active {
 }
 
 .value {
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .state {
-    margin-top: 12px;
-    padding: 10px;
-    text-align: center;
+    margin-top: 10px;
+    padding: 9px;
     border-radius: 9px;
+    text-align: center;
     background: #ececec;
-    font-weight: bold;
+    font-weight: 700;
 }
 
-.formula {
-    margin-top: 18px;
+.model {
+    margin-top: 16px;
     padding: 13px;
     border-radius: 10px;
     background: #f7f8f9;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.8;
+}
+
+.experiment {
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #fafafa;
+    border: 1px solid #e7e8ea;
+    font-size: 12px;
+    line-height: 1.7;
 }
 
 .graph-card {
     margin-top: 20px;
 }
 
-#graphCanvas {
+.graphs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.graph-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 3px 0 7px;
+}
+
+canvas.graph {
     width: 100%;
     height: auto;
     display: block;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #eee;
 }
 
 .note {
-    margin-top: 20px;
-    margin-bottom: 40px;
+    margin: 20px 0 40px;
     font-size: 12px;
     line-height: 1.7;
     color: #666;
 }
 
 @media (max-width: 850px) {
-    .layout {
+
+    .layout,
+    .graphs {
         grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 25px;
     }
 }
 </style>
@@ -200,19 +236,24 @@ button:active {
     <p>충전·방전 특성을 단순화한 컴퓨터 모델</p>
 </header>
 
-<!-- 시뮬레이션 속도 안내 -->
-<div class="speed-info">
-    시뮬레이션 속도: <b>600배속</b>
-    (실제 1초 = 가상 10분)
+<div class="speed">
+    시뮬레이션 속도:
+    <strong>600배속</strong>
+    · 실제 1초 = 가상 10분
 </div>
 
 <div class="container">
+
+    <!-- =====================================================
+         위쪽 영역
+         ===================================================== -->
 
     <div class="layout">
 
         <!-- =========================
              배터리 모형
              ========================= -->
+
         <div class="card">
 
             <div class="title">
@@ -229,8 +270,9 @@ button:active {
 
 
         <!-- =========================
-             실험 조건
+             실험 조절
              ========================= -->
+
         <div class="card">
 
             <div class="title">
@@ -239,11 +281,22 @@ button:active {
 
 
             <!-- SOC -->
+
             <div class="control">
 
-                <div class="control-title">
-                    <span>충전 상태 (SOC)</span>
-                    <span id="socText">70%</span>
+                <div class="control-header">
+
+                    <span>
+                        충전 상태 (SOC)
+                    </span>
+
+                    <span
+                        class="control-value"
+                        id="socText"
+                    >
+                        70%
+                    </span>
+
                 </div>
 
                 <input
@@ -251,34 +304,46 @@ button:active {
                     type="range"
                     min="0"
                     max="100"
-                    value="70"
                     step="1"
+                    value="70"
                 >
 
             </div>
 
 
             <!-- 전류 -->
+
             <div class="control">
 
-                <div class="control-title">
-                    <span>전류</span>
-                    <span id="currentText">1.0 A</span>
+                <div class="control-header">
+
+                    <span>
+                        전류
+                    </span>
+
+                    <span
+                        class="control-value"
+                        id="currentText"
+                    >
+                        1.0 A
+                    </span>
+
                 </div>
 
                 <input
                     id="currentSlider"
                     type="range"
                     min="0.1"
-                    max="3"
-                    value="1"
+                    max="3.0"
                     step="0.1"
+                    value="1.0"
                 >
 
             </div>
 
 
             <!-- 버튼 -->
+
             <div class="buttons">
 
                 <button
@@ -313,47 +378,110 @@ button:active {
 
 
             <!-- 상태 -->
+
             <div class="status">
 
                 <div class="row">
-                    <span class="name">현재 모드</span>
-                    <span class="value" id="modeText">대기</span>
+                    <span class="name">
+                        현재 모드
+                    </span>
+
+                    <span
+                        class="value"
+                        id="modeText"
+                    >
+                        대기
+                    </span>
                 </div>
 
-                <div class="row">
-                    <span class="name">SOC</span>
-                    <span class="value" id="statusSoc">70%</span>
-                </div>
 
                 <div class="row">
-                    <span class="name">개방전압</span>
-                    <span class="value" id="ocvText">3.64 V</span>
+                    <span class="name">
+                        SOC
+                    </span>
+
+                    <span
+                        class="value"
+                        id="statusSoc"
+                    >
+                        70%
+                    </span>
                 </div>
 
-                <div class="row">
-                    <span class="name">단자전압</span>
-                    <span class="value" id="voltageText">3.56 V</span>
-                </div>
 
                 <div class="row">
-                    <span class="name">전류</span>
-                    <span class="value" id="statusCurrent">1.0 A</span>
+                    <span class="name">
+                        개방전압 (OCV)
+                    </span>
+
+                    <span
+                        class="value"
+                        id="ocvText"
+                    >
+                        3.56 V
+                    </span>
                 </div>
 
-                <div class="row">
-                    <span class="name">내부저항</span>
-                    <span class="value">0.080 Ω</span>
-                </div>
 
                 <div class="row">
-                    <span class="name">경과 시간</span>
-                    <span class="value" id="timeText">0.0분</span>
+                    <span class="name">
+                        단자전압
+                    </span>
+
+                    <span
+                        class="value"
+                        id="voltageText"
+                    >
+                        3.48 V
+                    </span>
+                </div>
+
+
+                <div class="row">
+                    <span class="name">
+                        전류
+                    </span>
+
+                    <span
+                        class="value"
+                        id="statusCurrent"
+                    >
+                        1.0 A
+                    </span>
+                </div>
+
+
+                <div class="row">
+                    <span class="name">
+                        내부저항
+                    </span>
+
+                    <span
+                        class="value"
+                    >
+                        0.080 Ω
+                    </span>
+                </div>
+
+
+                <div class="row">
+                    <span class="name">
+                        가상 경과 시간
+                    </span>
+
+                    <span
+                        class="value"
+                        id="timeText"
+                    >
+                        0.0분
+                    </span>
                 </div>
 
             </div>
 
 
-            <!-- 실행 상태 -->
+            <!-- 현재 상태 -->
+
             <div
                 class="state"
                 id="stateText"
@@ -362,18 +490,63 @@ button:active {
             </div>
 
 
-            <!-- 모델 설명 -->
-            <div class="formula">
+            <!-- 모델 계산 -->
 
-                <b>모델의 기본 관계</b><br>
+            <div class="model">
 
-                SOC가 높을수록 OCV가 높아짐<br>
+                <b>모델에서 사용하는 관계</b>
 
-                방전 시:
-                단자전압 = OCV − 전류 × 내부저항<br>
+                <br>
 
-                충전 시:
+                SOC가 높을수록 OCV가 높아지도록 설정
+
+                <br>
+
+                방전:
+                단자전압 = OCV − 전류 × 내부저항
+
+                <br>
+
+                충전:
                 단자전압 = OCV + 전류 × 내부저항
+
+                <br>
+
+                SOC 변화량 =
+                전류 × 시간 ÷ 배터리 용량
+
+            </div>
+
+
+            <!-- 실험 방법 -->
+
+            <div class="experiment">
+
+                <b>실험 방법</b>
+
+                <br>
+
+                ① SOC를 설정합니다.
+
+                <br>
+
+                ② 전류를 설정합니다.
+
+                <br>
+
+                ③ 충전 또는 방전을 시작합니다.
+
+                <br>
+
+                ④ 배터리 모형과 수치의 변화를 관찰합니다.
+
+                <br>
+
+                ⑤ 그래프를 통해 시간에 따른 변화를 확인합니다.
+
+                <br>
+
+                ⑥ 전류 조건을 바꾸어 결과를 비교할 수 있습니다.
 
             </div>
 
@@ -382,41 +555,84 @@ button:active {
     </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          그래프
-         ========================= -->
+         ===================================================== -->
+
     <div class="card graph-card">
 
         <div class="title">
             시뮬레이션 결과
         </div>
 
-        <canvas
-            id="graphCanvas"
-            width="1100"
-            height="330"
-        ></canvas>
+
+        <div class="graphs">
+
+            <div>
+
+                <div class="graph-title">
+                    시간에 따른 SOC
+                </div>
+
+                <canvas
+                    class="graph"
+                    id="socGraph"
+                    width="550"
+                    height="280"
+                ></canvas>
+
+            </div>
+
+
+            <div>
+
+                <div class="graph-title">
+                    시간에 따른 전압
+                </div>
+
+                <canvas
+                    class="graph"
+                    id="voltageGraph"
+                    width="550"
+                    height="280"
+                ></canvas>
+
+            </div>
+
+        </div>
 
     </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          주의사항
-         ========================= -->
+         ===================================================== -->
+
     <div class="card note">
 
-        ※ 이 프로그램은 교육을 위해 실제 배터리의 특성을 단순화한 모델입니다.
-        실제 나트륨이온 배터리의 모든 화학적·전기화학적 반응을 재현하지 않습니다.
+        ※ 이 프로그램은 교육을 위해 나트륨이온 배터리의 특성을
+        크게 단순화한 모델입니다.
 
         <br>
 
-        ※ 배터리 내부의 파란색 이온 표시는 실제 이온의 위치나 개수를
-        정확하게 나타내는 것이 아니라 배터리 상태 변화를 이해하기 위한
-        개념적 시각화입니다.
+        ※ OCV-SOC 관계, 배터리 용량, 내부저항은 특정 상용
+        나트륨이온 배터리의 실제 측정값을 그대로 사용한 것이 아닙니다.
 
         <br>
 
-        ※ 시뮬레이션은 600배속으로 진행되므로 실제 시간과 화면의 경과 시간이 다릅니다.
+        ※ 실제 나트륨이온 배터리에서는 온도, 내부 구조,
+        전기화학 반응 등 더 다양한 요소를 고려해야 합니다.
+
+        <br>
+
+        ※ 배터리 내부의 파란색 Na⁺ 표시는 실제 이온의 정확한
+        위치나 개수를 나타내는 것이 아니라, 충전 상태에 따른
+        이온 이동을 이해하기 위한 개념적 시각화입니다.
+
+        <br>
+
+        ※ 시뮬레이션은 600배속으로 진행되므로 실제 시간과
+        화면의 가상 경과 시간이 다릅니다.
 
     </div>
 
@@ -436,11 +652,18 @@ const ctx =
     batteryCanvas.getContext("2d");
 
 
-const graphCanvas =
-    document.getElementById("graphCanvas");
+const socGraph =
+    document.getElementById("socGraph");
 
-const graphCtx =
-    graphCanvas.getContext("2d");
+const socCtx =
+    socGraph.getContext("2d");
+
+
+const voltageGraph =
+    document.getElementById("voltageGraph");
+
+const voltageCtx =
+    voltageGraph.getContext("2d");
 
 
 const socSlider =
@@ -464,22 +687,18 @@ const resetButton =
 
 
 // ============================================================
-// 모델 기본값
+// 모델 설정
 // ============================================================
 
-const capacity = 3.2;               // 배터리 용량 (Ah)
-
-const internalResistance = 0.08;   // 내부저항 (Ω)
-
-
-// ============================================================
-// 시뮬레이션 속도
-// ============================================================
-
-// 실제 시간보다 600배 빠르게 진행
-// 실제 1초 = 가상 10분
+// 실제 배터리가 아닌 교육용 단순 모델입니다.
 
 const SIMULATION_SPEED = 600;
+
+// 실제 1초 = 가상 600초 = 가상 10분
+
+const CAPACITY_AH = 3.2;
+
+const INTERNAL_RESISTANCE_OHM = 0.08;
 
 
 // ============================================================
@@ -490,18 +709,21 @@ let mode = "대기";
 
 let running = false;
 
-let elapsedTime = 0;
+let simulatedMinutes = 0;
 
-let animationPosition = 0;
-
-let graphData = [];
+let animationOffset = 0;
 
 let lastTime =
     performance.now();
 
 
+// 그래프에 저장할 데이터
+
+let graphData = [];
+
+
 // ============================================================
-// SOC 가져오기
+// SOC
 // ============================================================
 
 function getSOC() {
@@ -514,7 +736,7 @@ function getSOC() {
 
 
 // ============================================================
-// 전류 가져오기
+// 전류
 // ============================================================
 
 function getCurrent() {
@@ -533,21 +755,26 @@ function getCurrent() {
 function calculateOCV(soc) {
 
     /*
-        교육용 단순 모델.
+        교육용 단순화 모델.
 
-        SOC가 높을수록
-        OCV가 높아진다고 가정.
+        SOC가 높아질수록
+        개방전압이 높아진다고 가정합니다.
+
+        실제 나트륨이온 배터리의
+        측정 OCV 곡선이 아닙니다.
     */
 
-    return 2.8 + 1.2 * (
-        soc / 100
-    );
+    return 3.0 +
+        0.8 *
+        (
+            soc / 100
+        );
 
 }
 
 
 // ============================================================
-// 단자전압 계산
+// 단자전압
 // ============================================================
 
 function calculateVoltage() {
@@ -558,14 +785,11 @@ function calculateVoltage() {
     const current =
         getCurrent();
 
-
     const ocv =
         calculateOCV(
             soc
         );
 
-
-    // 방전
 
     if (
         mode === "방전"
@@ -575,13 +799,11 @@ function calculateVoltage() {
             0,
             ocv -
             current *
-            internalResistance
+            INTERNAL_RESISTANCE_OHM
         );
 
     }
 
-
-    // 충전
 
     if (
         mode === "충전"
@@ -591,7 +813,7 @@ function calculateVoltage() {
             0,
             ocv +
             current *
-            internalResistance
+            INTERNAL_RESISTANCE_OHM
         );
 
     }
@@ -603,7 +825,7 @@ function calculateVoltage() {
 
 
 // ============================================================
-// 숫자 업데이트
+// 상태 표시
 // ============================================================
 
 function updateStatus() {
@@ -614,12 +836,10 @@ function updateStatus() {
     const current =
         getCurrent();
 
-
     const ocv =
         calculateOCV(
             soc
         );
-
 
     const voltage =
         calculateVoltage();
@@ -628,13 +848,15 @@ function updateStatus() {
     document.getElementById(
         "socText"
     ).textContent =
-        soc.toFixed(0) + "%";
+        soc.toFixed(0) +
+        "%";
 
 
     document.getElementById(
         "currentText"
     ).textContent =
-        current.toFixed(1) + " A";
+        current.toFixed(1) +
+        " A";
 
 
     document.getElementById(
@@ -646,31 +868,36 @@ function updateStatus() {
     document.getElementById(
         "statusSoc"
     ).textContent =
-        soc.toFixed(0) + "%";
+        soc.toFixed(0) +
+        "%";
 
 
     document.getElementById(
         "ocvText"
     ).textContent =
-        ocv.toFixed(2) + " V";
+        ocv.toFixed(2) +
+        " V";
 
 
     document.getElementById(
         "voltageText"
     ).textContent =
-        voltage.toFixed(2) + " V";
+        voltage.toFixed(2) +
+        " V";
 
 
     document.getElementById(
         "statusCurrent"
     ).textContent =
-        current.toFixed(1) + " A";
+        current.toFixed(1) +
+        " A";
 
 
     document.getElementById(
         "timeText"
     ).textContent =
-        elapsedTime.toFixed(1) + "분";
+        simulatedMinutes.toFixed(1) +
+        "분";
 
 
     document.getElementById(
@@ -693,25 +920,11 @@ function sliderUpdate() {
 
     drawBattery();
 
-    drawGraph();
-
 }
 
 
-socSlider.addEventListener(
-    "input",
-    sliderUpdate
-);
-
-
-currentSlider.addEventListener(
-    "input",
-    sliderUpdate
-);
-
-
 // ============================================================
-// 배터리 모형 그리기
+// 배터리 그림
 // ============================================================
 
 function drawBattery() {
@@ -746,6 +959,7 @@ function drawBattery() {
 
     ctx.font =
         "bold 23px 'Malgun Gothic'";
+
 
     ctx.fillText(
         "나트륨이온 배터리의 단순화 모델",
@@ -901,9 +1115,9 @@ function drawBattery() {
     );
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // SOC 게이지
-    // --------------------------------------------------------
+    // ========================================================
 
     const gaugeX = 85;
     const gaugeY = 120;
@@ -949,7 +1163,6 @@ function drawBattery() {
     ctx.fillStyle =
         "#222";
 
-
     ctx.font =
         "bold 13px 'Malgun Gothic'";
 
@@ -968,22 +1181,31 @@ function drawBattery() {
     );
 
 
-    // --------------------------------------------------------
-    // 나트륨 이온 표시
-    // --------------------------------------------------------
+    // ========================================================
+    // Na+ 개념적 이동 표현
+    // ========================================================
 
     /*
-        SOC가 높을수록
-        파란색 이온을 많이 표시.
+        충전 상태가 높아질수록
+        Na+가 양극 쪽에서 음극 쪽으로
+        이동한 것으로 단순화해서 표현합니다.
 
-        실제 이온의 개수나 위치가 아니라
-        개념적인 시각화.
+        실제 이온의 정확한 위치나 개수가 아닙니다.
     */
 
+    const cathodeX =
+        405;
+
+    const anodeX =
+        295;
+
+
+    const positionRatio =
+        soc / 100;
+
+
     const ionCount =
-        Math.floor(
-            5 + soc * 0.23
-        );
+        24;
 
 
     for (
@@ -1001,88 +1223,172 @@ function drawBattery() {
             );
 
 
+        const centerX =
+            cathodeX +
+            (
+                anodeX -
+                cathodeX
+            ) *
+            positionRatio;
+
+
         const ionX =
-            275 +
-            column * 27;
+            centerX +
+            (
+                column -
+                2.5
+            ) *
+            15;
 
 
         const ionY =
-            140 +
+            145 +
             row * 35;
 
 
-        if (
-            ionY < 325
-        ) {
-
-            ctx.beginPath();
-
-            ctx.arc(
-                ionX,
-                ionY,
-                8,
-                0,
-                Math.PI * 2
-            );
+        let wobble = 0;
 
 
-            ctx.fillStyle =
-                "#4f81bd";
+        if (running) {
 
-
-            ctx.fill();
-
-
-            ctx.fillStyle =
-                "white";
-
-
-            ctx.font =
-                "bold 10px Arial";
-
-
-            ctx.fillText(
-                "+",
-                ionX,
-                ionY + 4
-            );
+            wobble =
+                Math.sin(
+                    animationOffset +
+                    i
+                ) *
+                2.5;
 
         }
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            ionX + wobble,
+            ionY,
+            7,
+            0,
+            Math.PI * 2
+        );
+
+
+        ctx.fillStyle =
+            "#4f81bd";
+
+
+        ctx.fill();
+
+
+        ctx.fillStyle =
+            "#ffffff";
+
+        ctx.font =
+            "bold 9px Arial";
+
+
+        ctx.fillText(
+            "+",
+            ionX + wobble,
+            ionY + 3
+        );
 
     }
 
 
-    // --------------------------------------------------------
-    // 전류 흐름
-    // --------------------------------------------------------
+    // ========================================================
+    // 충전 / 방전 방향
+    // ========================================================
+
+    ctx.font =
+        "12px 'Malgun Gothic'";
+
+
+    ctx.fillStyle =
+        "#555";
+
+
+    ctx.fillText(
+        "충전: 양극 → 음극",
+        340,
+        400
+    );
+
+
+    ctx.fillText(
+        "방전: 음극 → 양극",
+        340,
+        420
+    );
+
+
+    // ========================================================
+    // 전류 흐름 애니메이션
+    // ========================================================
 
     if (running) {
 
-        animationPosition +=
+        animationOffset +=
             current *
-            0.7;
+            0.25;
+
+
+        const direction =
+            mode === "충전"
+                ? -1
+                : 1;
 
 
         for (
             let i = 0;
-            i < 8;
+            i < 6;
             i++
         ) {
 
-            const flowX =
-                255 +
-                (
-                    animationPosition +
-                    i * 25
-                ) % 175;
+            let flowX;
+
+
+            if (
+                direction === 1
+            ) {
+
+                // 방전: 왼쪽 → 오른쪽
+
+                flowX =
+                    275 +
+                    (
+                        animationOffset *
+                        3 +
+                        i * 30
+                    ) % 160;
+
+            }
+
+            else {
+
+                // 충전: 오른쪽 → 왼쪽
+
+                flowX =
+                    430 -
+                    (
+                        animationOffset *
+                        3 +
+                        i * 30
+                    ) % 160;
+
+            }
+
+
+            const flowY =
+                325;
 
 
             ctx.beginPath();
 
+
             ctx.arc(
                 flowX,
-                325,
-                5,
+                flowY,
+                4,
                 0,
                 Math.PI * 2
             );
@@ -1099,9 +1405,9 @@ function drawBattery() {
     }
 
 
-    // --------------------------------------------------------
-    // 충전 / 방전 표시
-    // --------------------------------------------------------
+    // ========================================================
+    // 모드 표시
+    // ========================================================
 
     ctx.font =
         "bold 17px 'Malgun Gothic'";
@@ -1154,9 +1460,9 @@ function drawBattery() {
     }
 
 
-    // --------------------------------------------------------
-    // 전압
-    // --------------------------------------------------------
+    // ========================================================
+    // 전압 표시
+    // ========================================================
 
     ctx.fillStyle =
         "#222";
@@ -1171,7 +1477,7 @@ function drawBattery() {
         voltage.toFixed(2) +
         " V",
         350,
-        445
+        450
     );
 
 
@@ -1184,24 +1490,19 @@ function drawBattery() {
         current.toFixed(1) +
         " A",
         350,
-        472
+        478
     );
 
 
-    // --------------------------------------------------------
-    // 안내
-    // --------------------------------------------------------
-
     ctx.fillStyle =
         "#777";
-
 
     ctx.font =
         "12px 'Malgun Gothic'";
 
 
     ctx.fillText(
-        "파란색 이온 표시는 개념적인 시각화입니다.",
+        "파란색 Na⁺ 표시는 개념적 시각화입니다.",
         350,
         525
     );
@@ -1218,7 +1519,7 @@ function saveGraphData() {
     graphData.push({
 
         time:
-            elapsedTime,
+            simulatedMinutes,
 
         soc:
             getSOC(),
@@ -1230,7 +1531,8 @@ function saveGraphData() {
 
 
     if (
-        graphData.length > 400
+        graphData.length >
+        500
     ) {
 
         graphData.shift();
@@ -1244,36 +1546,65 @@ function saveGraphData() {
 // 그래프 그리기
 // ============================================================
 
-function drawGraph() {
+function drawLineGraph(
+    canvasContext,
+    canvas,
+    data,
+    key,
+    minY,
+    maxY,
+    yLabel
+) {
 
-    graphCtx.clearRect(
+    canvasContext.clearRect(
         0,
         0,
-        graphCanvas.width,
-        graphCanvas.height
+        canvas.width,
+        canvas.height
     );
 
 
+    const left = 55;
+    const right = 18;
+    const top = 22;
+    const bottom = 42;
+
+
+    const plotWidth =
+        canvas.width -
+        left -
+        right;
+
+
+    const plotHeight =
+        canvas.height -
+        top -
+        bottom;
+
+
+    // 빈 그래프
+
     if (
-        graphData.length < 2
+        data.length <
+        2
     ) {
 
-        graphCtx.fillStyle =
+        canvasContext.fillStyle =
             "#777";
 
 
-        graphCtx.font =
-            "15px 'Malgun Gothic'";
+        canvasContext.font =
+            "14px 'Malgun Gothic'";
 
 
-        graphCtx.textAlign =
+        canvasContext.textAlign =
             "center";
 
 
-        graphCtx.fillText(
-            "충전 또는 방전을 시작하면 결과가 표시됩니다.",
-            graphCanvas.width / 2,
-            graphCanvas.height / 2
+        canvasContext.fillText(
+            "충전 또는 방전을 시작하세요.",
+            canvas.width / 2,
+            canvas.height / 2
         );
 
 
@@ -1282,50 +1613,32 @@ function drawGraph() {
     }
 
 
-    const left = 60;
-    const top = 25;
-    const right = 20;
-    const bottom = 45;
-
-
-    const plotWidth =
-        graphCanvas.width -
-        left -
-        right;
-
-
-    const plotHeight =
-        graphCanvas.height -
-        top -
-        bottom;
-
-
     const firstTime =
-        graphData[0].time;
+        data[0].time;
 
 
     const lastTime =
-        graphData[
-            graphData.length - 1
-        ].time;
+        Math.max(
+            data[
+                data.length - 1
+            ].time,
+            firstTime + 0.1
+        );
 
 
     const timeRange =
-        Math.max(
-            lastTime -
-            firstTime,
-            0.1
-        );
+        lastTime -
+        firstTime;
 
 
     // --------------------------------------------------------
     // 격자
     // --------------------------------------------------------
 
-    graphCtx.strokeStyle =
-        "#e3e5e8";
+    canvasContext.strokeStyle =
+        "#e5e7ea";
 
-    graphCtx.lineWidth =
+    canvasContext.lineWidth =
         1;
 
 
@@ -1338,114 +1651,83 @@ function drawGraph() {
         const y =
             top +
             plotHeight -
-            plotHeight *
-            i /
-            5;
+            (
+                plotHeight *
+                i /
+                5
+            );
 
 
-        graphCtx.beginPath();
+        canvasContext.beginPath();
 
-        graphCtx.moveTo(
+        canvasContext.moveTo(
             left,
             y
         );
 
-        graphCtx.lineTo(
+        canvasContext.lineTo(
             left +
             plotWidth,
             y
         );
 
-        graphCtx.stroke();
+        canvasContext.stroke();
 
     }
 
 
     // --------------------------------------------------------
-    // SOC 그래프
+    // 축
     // --------------------------------------------------------
 
-    graphCtx.beginPath();
+    canvasContext.strokeStyle =
+        "#555";
 
-    graphCtx.strokeStyle =
-        "#4c78a8";
-
-    graphCtx.lineWidth =
-        3;
+    canvasContext.lineWidth =
+        1.4;
 
 
-    graphData.forEach(
-        (point, index) => {
+    canvasContext.beginPath();
 
-            const x =
-                left +
-                (
-                    point.time -
-                    firstTime
-                )
-                /
-                timeRange
-                *
-                plotWidth;
-
-
-            const y =
-                top +
-                plotHeight -
-                point.soc /
-                100 *
-                plotHeight;
-
-
-            if (
-                index === 0
-            ) {
-
-                graphCtx.moveTo(
-                    x,
-                    y
-                );
-
-            }
-
-            else {
-
-                graphCtx.lineTo(
-                    x,
-                    y
-                );
-
-            }
-
-        }
+    canvasContext.moveTo(
+        left,
+        top
     );
 
+    canvasContext.lineTo(
+        left,
+        top +
+        plotHeight
+    );
 
-    graphCtx.stroke();
+    canvasContext.lineTo(
+        left +
+        plotWidth,
+        top +
+        plotHeight
+    );
+
+    canvasContext.stroke();
 
 
     // --------------------------------------------------------
-    // 전압 그래프
+    // 데이터 선
     // --------------------------------------------------------
 
-    graphCtx.beginPath();
+    canvasContext.beginPath();
 
-    graphCtx.strokeStyle =
-        "#e45756";
+    canvasContext.strokeStyle =
+        "#4c78a8";
 
-    graphCtx.lineWidth =
+    canvasContext.lineWidth =
         3;
 
 
-    const minVoltage =
-        2.5;
-
-    const maxVoltage =
-        4.5;
-
-
-    graphData.forEach(
-        (point, index) => {
+    data.forEach(
+        (
+            point,
+            index
+        ) => {
 
             const x =
                 left +
@@ -1461,13 +1743,13 @@ function drawGraph() {
 
             const normalized =
                 (
-                    point.voltage -
-                    minVoltage
+                    point[key] -
+                    minY
                 )
                 /
                 (
-                    maxVoltage -
-                    minVoltage
+                    maxY -
+                    minY
                 );
 
 
@@ -1482,7 +1764,7 @@ function drawGraph() {
                 index === 0
             ) {
 
-                graphCtx.moveTo(
+                canvasContext.moveTo(
                     x,
                     y
                 );
@@ -1491,7 +1773,7 @@ function drawGraph() {
 
             else {
 
-                graphCtx.lineTo(
+                canvasContext.lineTo(
                     x,
                     y
                 );
@@ -1502,66 +1784,102 @@ function drawGraph() {
     );
 
 
-    graphCtx.stroke();
+    canvasContext.stroke();
 
 
     // --------------------------------------------------------
-    // 축
+    // 라벨
     // --------------------------------------------------------
 
-    graphCtx.strokeStyle =
-        "#555";
-
-    graphCtx.lineWidth =
-        1.5;
-
-
-    graphCtx.beginPath();
-
-    graphCtx.moveTo(
-        left,
-        top
-    );
-
-    graphCtx.lineTo(
-        left,
-        top +
-        plotHeight
-    );
-
-    graphCtx.lineTo(
-        left +
-        plotWidth,
-        top +
-        plotHeight
-    );
-
-    graphCtx.stroke();
-
-
-    graphCtx.fillStyle =
+    canvasContext.fillStyle =
         "#666";
 
-    graphCtx.font =
-        "12px 'Malgun Gothic'";
 
-    graphCtx.textAlign =
+    canvasContext.font =
+        "11px 'Malgun Gothic'";
+
+
+    canvasContext.textAlign =
+        "left";
+
+
+    canvasContext.fillText(
+        yLabel,
+        5,
+        top + 10
+    );
+
+
+    canvasContext.textAlign =
         "center";
 
 
-    graphCtx.fillText(
+    canvasContext.fillText(
         "시간 (분)",
         left +
-        plotWidth /
-        2,
-        graphCanvas.height - 12
+        plotWidth / 2,
+        canvas.height - 12
+    );
+
+
+    // 최댓값 / 최솟값
+
+    canvasContext.textAlign =
+        "right";
+
+
+    canvasContext.fillText(
+        key === "soc"
+            ? maxY.toFixed(0)
+            : maxY.toFixed(1),
+        left - 7,
+        top + 4
+    );
+
+
+    canvasContext.fillText(
+        key === "soc"
+            ? minY.toFixed(0)
+            : minY.toFixed(1),
+        left - 7,
+        top + plotHeight + 4
     );
 
 }
 
 
 // ============================================================
-// 충전 시작
+// 두 그래프 그리기
+// ============================================================
+
+function drawGraphs() {
+
+    drawLineGraph(
+        socCtx,
+        socGraph,
+        graphData,
+        "soc",
+        0,
+        100,
+        "SOC (%)"
+    );
+
+
+    drawLineGraph(
+        voltageCtx,
+        voltageGraph,
+        graphData,
+        "voltage",
+        2.5,
+        4.5,
+        "전압 (V)"
+    );
+
+}
+
+
+// ============================================================
+// 충전
 // ============================================================
 
 function startCharging() {
@@ -1569,8 +1887,10 @@ function startCharging() {
     mode =
         "충전";
 
+
     running =
         true;
+
 
     updateStatus();
 
@@ -1580,7 +1900,7 @@ function startCharging() {
 
 
 // ============================================================
-// 방전 시작
+// 방전
 // ============================================================
 
 function startDischarging() {
@@ -1588,8 +1908,10 @@ function startDischarging() {
     mode =
         "방전";
 
+
     running =
         true;
+
 
     updateStatus();
 
@@ -1607,6 +1929,7 @@ function stopSimulation() {
     running =
         false;
 
+
     updateStatus();
 
     drawBattery();
@@ -1623,14 +1946,18 @@ function resetSimulation() {
     running =
         false;
 
+
     mode =
         "대기";
 
-    elapsedTime =
+
+    simulatedMinutes =
         0;
 
-    animationPosition =
+
+    animationOffset =
         0;
+
 
     graphData =
         [];
@@ -1648,22 +1975,76 @@ function resetSimulation() {
 
     drawBattery();
 
-    drawGraph();
+    drawGraphs();
 
 }
+
+
+// ============================================================
+// 버튼 연결
+// ============================================================
+
+chargeButton.addEventListener(
+    "click",
+    startCharging
+);
+
+
+dischargeButton.addEventListener(
+    "click",
+    startDischarging
+);
+
+
+stopButton.addEventListener(
+    "click",
+    stopSimulation
+);
+
+
+resetButton.addEventListener(
+    "click",
+    resetSimulation
+);
+
+
+// ============================================================
+// 슬라이더 연결
+// ============================================================
+
+socSlider.addEventListener(
+    "input",
+    sliderUpdate
+);
+
+
+currentSlider.addEventListener(
+    "input",
+    sliderUpdate
+);
 
 
 // ============================================================
 // 시뮬레이션
 // ============================================================
 
-function simulationLoop(currentTime) {
+function simulationLoop(
+    currentTime
+) {
 
-    const deltaSeconds =
-        (
-            currentTime -
-            lastTime
-        ) / 1000;
+    /*
+        실제 경과 시간.
+        너무 큰 값이 들어오지 않도록 제한합니다.
+    */
+
+    const realDeltaSeconds =
+        Math.min(
+            (
+                currentTime -
+                lastTime
+            ) / 1000,
+            0.25
+        );
 
 
     lastTime =
@@ -1672,12 +2053,8 @@ function simulationLoop(currentTime) {
 
     if (running) {
 
-        const current =
-            getCurrent();
-
-
         /*
-            600배속.
+            600배속 적용.
 
             실제 1초
             =
@@ -1687,25 +2064,29 @@ function simulationLoop(currentTime) {
         */
 
         const simulatedSeconds =
-            deltaSeconds *
+            realDeltaSeconds *
             SIMULATION_SPEED;
+
+
+        const current =
+            getCurrent();
 
 
         /*
             Q = I × t
 
             배터리 용량을 기준으로
-            시간에 따른 SOC 변화를 계산.
+            SOC 변화량을 계산합니다.
         */
 
-        const socChange =
+        const deltaSOC =
             current *
             (
                 simulatedSeconds /
                 3600
             )
             /
-            capacity
+            CAPACITY_AH
             *
             100;
 
@@ -1714,26 +2095,31 @@ function simulationLoop(currentTime) {
             getSOC();
 
 
+        // 충전
+
         if (
             mode === "충전"
         ) {
 
             soc +=
-                socChange;
+                deltaSOC;
 
         }
+
+
+        // 방전
 
         else if (
             mode === "방전"
         ) {
 
             soc -=
-                socChange;
+                deltaSOC;
 
         }
 
 
-        // SOC를 0~100% 사이로 제한
+        // SOC 범위 제한
 
         soc =
             Math.max(
@@ -1749,22 +2135,24 @@ function simulationLoop(currentTime) {
             soc;
 
 
-        // 실제 경과 시간이 아니라
-        // 가상 실험 경과 시간
+        // 가상 시간 증가
 
-        elapsedTime +=
+        simulatedMinutes +=
             simulatedSeconds /
             60;
 
 
-        // 일정 간격으로 그래프 기록
+        // ----------------------------------------------------
+        // 그래프 기록
+        // ----------------------------------------------------
 
         if (
             graphData.length === 0 ||
-            elapsedTime -
+            simulatedMinutes -
             graphData[
                 graphData.length - 1
-            ].time >= 0.1
+            ].time
+            >= 0.2
         ) {
 
             saveGraphData();
@@ -1772,7 +2160,9 @@ function simulationLoop(currentTime) {
         }
 
 
-        // SOC가 끝까지 가면 자동 정지
+        // ----------------------------------------------------
+        // 완전 충전 / 완전 방전
+        // ----------------------------------------------------
 
         if (
             soc <= 0 ||
@@ -1787,11 +2177,15 @@ function simulationLoop(currentTime) {
     }
 
 
+    // --------------------------------------------------------
+    // 화면 갱신
+    // --------------------------------------------------------
+
     updateStatus();
 
     drawBattery();
 
-    drawGraph();
+    drawGraphs();
 
 
     requestAnimationFrame(
@@ -1802,14 +2196,14 @@ function simulationLoop(currentTime) {
 
 
 // ============================================================
-// 시작
+// 최초 실행
 // ============================================================
 
 updateStatus();
 
 drawBattery();
 
-drawGraph();
+drawGraphs();
 
 requestAnimationFrame(
     simulationLoop
